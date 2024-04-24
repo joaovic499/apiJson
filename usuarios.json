@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "usuario": "novousuario",
+    "senha": "$2b$10$gksTSqSWvMm/QWhLD3JvSO1CD403jm3GW0nz1CiX7B7RnkNqdPWh6",
+    "codigo": "123"
+  },
+  {
+    "usuario": "novousuario",
+    "senha": "$2b$10$UxWWi3jTMv17bbKWD2CUM.rvVBGi2CV5wEQXcXY6WFqWlM1qIn8iO",
+    "codigo": "123"
+  }
+]

@@ -8,7 +8,7 @@ const PORT = 3000;
 app.use(express.json());
 
 const usuariosFilePath = 'usuarios.json';
-let proximoId = 1;
+
 
 // Rota para listar todos os usuários
 app.get('/usuarios', (req, res) => {
@@ -45,33 +45,34 @@ app.get('/usuarios/:id', (req, res) => {
 });
 
 // Rota para criar um novo usuário
-app.post('/usuarios', (req, res) => {
-  const { usuario, senha } = req.body;
-  if (!usuario || !senha) {
-    return res.status(400).send('Usuário e senha são obrigatórios');
-  }
+app.post('/usuarios', async (req, res) => {
+  try{
+    const hashedPaswword = await bcrypt.hash(req.body.senha, 10);
+    const usuario = { usuario: req.body.usuario, senha: hashedPaswword, codigo: req.body.codigo};
 
-  const novoUsuario = { id: proximoId++, usuario, senha };
-  fs.readFile(usuariosFilePath, 'utf8', (err, data) => {
+   fs.readFile(usuariosFilePath, 'utf8', (err, data) => {
     if (err) {
       console.error(err);
       return res.status(500).send('Erro interno do servidor');
     }
 
-    const usuarios = JSON.parse(data);
-    usuarios.push(novoUsuario);
+    let usuarios = JSON.parse(data);
+    usuarios.push(usuario);
 
-    fs.writeFile(usuariosFilePath, JSON.stringify(usuarios), err => {
-      if (err) {
+    fs.writeFile(usuariosFilePath, JSON.stringify(usuarios, null, 2), err => {
+      if (err){
         console.error(err);
-        return res.status(500).send('Erro interno do servidor');
-      }
-
-      res.status(201).send('Usuário criado com sucesso');
+          console.error(err);
+          return res.status(500).send('Erro interno do servidor');
+        }
+        res.status(201).send("Usuario criado com sucesso");
+      });
     });
-  });
+   } catch {
+    res.status(500).send("Erro ao criar o usuario");
+   }
 });
-
+ 
 // Rota para atualizar um usuário existente
 app.put('/usuarios/:id', (req, res) => {
   const id = req.params.id;
